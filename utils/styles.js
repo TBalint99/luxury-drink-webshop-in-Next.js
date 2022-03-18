@@ -4,14 +4,12 @@ const useStyles = makeStyles({
     navbar: {
         backgroundColor: '#203040',
         '& a': {
-            color: '#2A2A2A',
             marginLeft: 10,
         },
     },
     brand: {
         fontWeight: 'bold',
         fontSize: '1.5rem',
-        color: '#fff'
     },
     grow: {
         flexGrow: 1,
@@ -29,6 +27,11 @@ const useStyles = makeStyles({
     section: {
         marginTop: 10,
         marginBottom: 10
+    },
+    linkContainer: {
+        display: 'flex',
+        paddingRight: '1em',
+        gap: '1.5em'
     }
 })
 

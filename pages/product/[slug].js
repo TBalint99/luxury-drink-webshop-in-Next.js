@@ -29,7 +29,7 @@ export default function ProductScreen() {
                 </NextLink>
             </div>
             <Grid container spacing={1}>
-                <Grid item md={4} xs={12}>
+                <Grid item lg={4} md={4} xs={12}>
                     <Image
                         src={product.image}
                         alt={product.name}
@@ -38,10 +38,10 @@ export default function ProductScreen() {
                         layout="responsive"
                     ></Image>
                 </Grid>
-                <Grid item md={4} xs={12}>
+                <Grid item lg={5} md={4} xs={12}>
                     <List>
                         <ListItem>
-                            <Typography component='h1'>{product.name}</Typography>
+                            <Typography component='h1' variant='h1'>{product.name}</Typography>
                         </ListItem>
                         <ListItem>
                             <Typography>Category: {product.category}</Typography>
@@ -57,7 +57,7 @@ export default function ProductScreen() {
                         </ListItem>
                     </List>
                 </Grid>
-                <Grid item md={4} xs={12}>
+                <Grid item lg={3} md={4} xs={12}>
                     <Card>
                         <List>
                             <ListItem>
