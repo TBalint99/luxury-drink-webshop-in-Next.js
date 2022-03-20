@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link'
-import { AppBar, Toolbar, Typography, Container, Link, createMuiTheme, ThemeProvider, CssBaseline, Switch } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Container, Link, createMuiTheme, ThemeProvider, CssBaseline, Switch, Badge } from '@material-ui/core';
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
 import Cookies from 'js-cookie';
@@ -9,7 +9,7 @@ import Cookies from 'js-cookie';
 export default function Layout({ title, children, description }) {
 
     const { state, dispatch } = useContext(Store)
-    const { darkMode } = state
+    const { darkMode, cart } = state
 
     const theme = createMuiTheme({
         typography: {
@@ -46,7 +46,19 @@ export default function Layout({ title, children, description }) {
 
     // everytime the darkMode value changes, it will automatically apply the selected mode
     const [darkModeValue, setDarkModeValue] = useState(false)
-    useEffect(() => setDarkModeValue(darkMode), [darkMode])
+    const [badgeValue, setBadgeValue] = useState("Cart")
+
+    useEffect(() => {
+        setDarkModeValue(darkMode)
+        setBadgeValue(
+            cart.cartItems.length > 0 ?
+            <Badge
+                badgeContent={cart.cartItems.length}
+                color='secondary'
+            >Cart</Badge>
+            : "Cart"
+        )
+    }, [darkMode, cart])
 
 
     return (
@@ -68,7 +80,9 @@ export default function Layout({ title, children, description }) {
                     <div className={classes.linkContainer}>
                         <Switch checked={darkModeValue} onChange={darkModeChangeHandler}></Switch>
                         <NextLink href="/cart" passHref>
-                            <Link color='secondary' component="button">Cart</Link>
+                            <Link color='secondary' component="button">
+                                {badgeValue}
+                            </Link>
                         </NextLink>
                         <NextLink href="/login" passHref>
                             <Link color='secondary' component="button">Login</Link>
