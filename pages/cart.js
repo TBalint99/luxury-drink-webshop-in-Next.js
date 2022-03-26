@@ -1,11 +1,12 @@
 import { Button, Card, Grid, Link, List, ListItem, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
 import React, { useContext } from 'react'
+import dynamic from 'next/dynamic'
 import Layout from '../components/Layout'
 import { Store } from '../utils/Store'
 import NextLink from 'next/link'
 import Image from 'next/image'
 
-export default function CartScreen() {
+function CartScreen() {
   const { state } = useContext(Store)
   const { cart: { cartItems } } = state
 
@@ -98,3 +99,7 @@ export default function CartScreen() {
     </Layout>
   )
 }
+
+// to get rid of SSR at this component, use dynamic export
+// in this case, the cart page will only be rendered at client side
+export default dynamic(() => Promise.resolve(CartScreen), { ssr: false })
