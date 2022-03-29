@@ -6,8 +6,10 @@ import { Store } from '../utils/Store'
 import NextLink from 'next/link'
 import Image from 'next/image'
 import axios from 'axios'
+import { useRouter } from 'next/router'
 
 function CartScreen() {
+  const router = useRouter()
   const { state, dispatch } = useContext(Store)
   const { cart: { cartItems } } = state
 
@@ -26,13 +28,17 @@ function CartScreen() {
     dispatch({ type: 'CART_REMOVE_ITEM', payload: item })
   }
 
+  const checkoutHandler = () => {
+    router.push('/shipping')
+  }
+
   return (
     <Layout title="Shopping Cart">
       <Typography component="h1" variant="h1">Shopping Cart</Typography>
       {
         cartItems.length === 0 ? (
           <div>
-            Cart is empty.
+            Cart is empty. &nbsp;
             <NextLink href="/" passHref>
               <Link>
                 Go shopping!
@@ -118,6 +124,7 @@ function CartScreen() {
                         variant='contained'
                         color='primary'
                         fullWidth
+                        onClick={checkoutHandler}
                       >
                         Check Out
                       </Button>

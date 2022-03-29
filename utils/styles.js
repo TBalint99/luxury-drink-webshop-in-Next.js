@@ -32,6 +32,10 @@ const useStyles = makeStyles({
         display: 'flex',
         paddingRight: '1em',
         gap: '1.5em'
+    },
+    form: {
+        maxWidth: 800,
+        margin: '0 auto'
     }
 })
 
