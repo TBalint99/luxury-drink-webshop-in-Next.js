@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link'
-import { AppBar, Toolbar, Typography, Container, Link, createMuiTheme, ThemeProvider, CssBaseline, Switch, Badge } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Container, Link, createMuiTheme, ThemeProvider, CssBaseline, Switch, Badge, Button } from '@material-ui/core';
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
 import Cookies from 'js-cookie';
@@ -9,7 +9,7 @@ import Cookies from 'js-cookie';
 export default function Layout({ title, children, description }) {
 
     const { state, dispatch } = useContext(Store)
-    const { darkMode, cart } = state
+    const { darkMode, cart, userInfo } = state
 
     const theme = createMuiTheme({
         typography: {
@@ -84,9 +84,18 @@ export default function Layout({ title, children, description }) {
                                 {badgeValue}
                             </Link>
                         </NextLink>
-                        <NextLink href="/login" passHref>
-                            <Link color='secondary' component="button">Login</Link>
-                        </NextLink>
+                        {
+                            userInfo ? (
+                                <Button
+                                    className={classes.navbarButton}
+                                    color='secondary'
+                                >{userInfo.name}</Button>
+                            ) : (
+                                <NextLink href="/login" passHref>
+                                    <Link color='secondary' component="button">Login</Link>
+                                </NextLink>
+                            )
+                        }
                     </div>
                 </Toolbar>
             </AppBar>

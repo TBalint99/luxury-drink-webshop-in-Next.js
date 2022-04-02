@@ -1,12 +1,24 @@
 import { Button, Link, List, ListItem, TextField, Typography } from '@material-ui/core'
 import axios from 'axios'
 import NextLink from 'next/link'
-import React, { useState } from 'react'
+import { useRouter } from 'next/router'
+import React, { useContext, useState } from 'react'
 import Layout from '../components/Layout'
+import { Store } from '../utils/Store'
 import useStyles from '../utils/styles'
+import Cookies from 'js-cookie'
 
 export default function Login() {
     
+    const router = useRouter()
+    const { redirect } = router.query
+    const { state, dispatch } = useContext(Store)
+    const { userInfo } = state
+    
+    if(userInfo) {
+        router.push('/')
+    }
+
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
@@ -16,7 +28,10 @@ export default function Login() {
         e.preventDefault()
         try {
             const { data } = await axios.post('/api/users/login', { email, password })
-            alert('Successfully logged in!')
+
+            dispatch({ type: 'USER_LOGIN', payload: data })
+            Cookies.set('userInfo', JSON.stringify(data))
+            router.push(redirect || '/')
         } catch (err) {
             console.log(err.response.data ? err.response.data.message : err.message)
             alert(err.response.data ? err.response.data.message : err.message)
@@ -66,7 +81,7 @@ export default function Login() {
                         </Button>
                     </ListItem>
                     <ListItem>
-                        Don't have account? &nbsp; <NextLink href='/signup' passHref><Link>Sign Up</Link></NextLink>
+                        Don&apos;t have account? &nbsp; <NextLink href='/signup' passHref><Link>Sign Up</Link></NextLink>
                     </ListItem>
                 </List>
             </form>
