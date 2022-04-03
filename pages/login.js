@@ -2,7 +2,7 @@ import { Button, Link, List, ListItem, TextField, Typography } from '@material-u
 import axios from 'axios'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import { Store } from '../utils/Store'
 import useStyles from '../utils/styles'
@@ -15,9 +15,11 @@ export default function Login() {
     const { state, dispatch } = useContext(Store)
     const { userInfo } = state
     
-    if(userInfo) {
-        router.push('/')
-    }
+    useEffect(() => {
+        if(userInfo) {
+            router.push('/')
+        }
+    }, [])
 
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')

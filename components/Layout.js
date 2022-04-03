@@ -1,13 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link'
-import { AppBar, Toolbar, Typography, Container, Link, createMuiTheme, ThemeProvider, CssBaseline, Switch, Badge, Button } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Container, Link, createMuiTheme, ThemeProvider, CssBaseline, Switch, Badge, Button, Avatar, Menu, MenuItem } from '@material-ui/core';
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
 import Cookies from 'js-cookie';
+import { useRouter } from 'next/router';
 
 export default function Layout({ title, children, description }) {
 
+    const router = useRouter()
     const { state, dispatch } = useContext(Store)
     const { darkMode, cart, userInfo } = state
 
@@ -60,6 +62,20 @@ export default function Layout({ title, children, description }) {
         )
     }, [darkMode, cart])
 
+    const [ anchorEl, setAnchorEl ] = useState(null)
+    const loginClickHandler = (e) => {
+        setAnchorEl(e.currentTarget)
+    }
+    const loginMenuCloseHandler = () => {
+        setAnchorEl(null)
+    }
+    const logoutClickHandler = () => {
+        setAnchorEl(null)
+        dispatch({ type: 'USER_LOGOUT' })
+        Cookies.remove('userInfo')
+        Cookies.remove('cartItems')
+        router.push('/')
+    }
 
     return (
     <div>
@@ -86,10 +102,26 @@ export default function Layout({ title, children, description }) {
                         </NextLink>
                         {
                             userInfo ? (
-                                <Button
-                                    className={classes.navbarButton}
-                                    color='secondary'
-                                >{userInfo.name}</Button>
+                                <>
+                                    <Button
+                                        className={classes.navbarButton}
+                                        color='secondary'
+                                        aria-controls="simple-menu"
+                                        aria-haspopup="true"
+                                        onClick={loginClickHandler}
+                                    >{userInfo.name}</Button>
+                                    <Menu
+                                        id="simple-menu"
+                                        anchorEl={anchorEl}
+                                        keepMounted
+                                        open={Boolean(anchorEl)}
+                                        onClose={loginMenuCloseHandler}
+                                    >
+                                        <MenuItem onClick={loginMenuCloseHandler}>Profile</MenuItem>
+                                        <MenuItem onClick={loginMenuCloseHandler}>My account</MenuItem>
+                                        <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
+                                    </Menu>
+                                </>
                             ) : (
                                 <NextLink href="/login" passHref>
                                     <Link color='secondary' component="button">Login</Link>
