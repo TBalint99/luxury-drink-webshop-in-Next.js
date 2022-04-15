@@ -1,5 +1,4 @@
-import { Button, Link, List, ListItem, TextField, Typography } from '@material-ui/core'
-import NextLink from 'next/link'
+import { Button, List, ListItem, TextField, Typography } from '@material-ui/core'
 import { useRouter } from 'next/router'
 import React, { useContext, useEffect } from 'react'
 import Layout from '../components/Layout'
@@ -7,20 +6,27 @@ import { Store } from '../utils/Store'
 import useStyles from '../utils/styles'
 import Cookies from 'js-cookie'
 import { Controller, useForm } from 'react-hook-form'
+import CheckoutWizard from '../components/checkoutWizard'
 
 export default function Shipping() {
     
-    const { handleSubmit, control, formState: { errors } } = useForm()
+    const { handleSubmit, control, formState: { errors }, setValue } = useForm()
 
     const router = useRouter()
     const { redirect } = router.query
     const { state, dispatch } = useContext(Store)
-    const { userInfo } = state
+    const { userInfo, cart: { shippingAddress } } = state
     
     useEffect(() => {
         if(!userInfo) {
             router.push('/login?redirect=/shipping')
         }
+
+        setValue('fullName', shippingAddress.fullName)
+        setValue('address', shippingAddress.address)
+        setValue('city', shippingAddress.city)
+        setValue('postalCode', shippingAddress.postalCode)
+        setValue('country', shippingAddress.country)
     }, [])
 
     const classes = useStyles()
@@ -34,13 +40,17 @@ export default function Shipping() {
     }
 
     return (
-        <Layout title="Shipping">
+        <Layout title="Shipping Address">
+            <br />
+            <CheckoutWizard
+                activeStep={1}
+            />
             <form
                 className={classes.form}
                 onSubmit={handleSubmit(submitHandler)}
             >
                 <Typography component='h1' variant='h1'>
-                    Shipping
+                    Shipping Address
                 </Typography>
                 <List>
                 <ListItem>
