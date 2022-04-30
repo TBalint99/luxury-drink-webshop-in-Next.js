@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link'
-import { AppBar, Toolbar, Typography, Container, Link, createMuiTheme, ThemeProvider, CssBaseline, Switch, Badge, Button, Avatar, Menu, MenuItem } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Container, Link, createMuiTheme, ThemeProvider, CssBaseline, Switch, Badge, Button, Menu, MenuItem } from '@material-ui/core';
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
 import Cookies from 'js-cookie';
@@ -49,6 +49,7 @@ export default function Layout({ title, children, description }) {
     // everytime the darkMode value changes, it will automatically apply the selected mode
     const [darkModeValue, setDarkModeValue] = useState(false)
     const [badgeValue, setBadgeValue] = useState("Cart")
+    const [userInfoValue, setUserInfoValue] = useState(null)
 
     useEffect(() => {
         setDarkModeValue(darkMode)
@@ -60,7 +61,10 @@ export default function Layout({ title, children, description }) {
             >Cart</Badge>
             : "Cart"
         )
-    }, [darkMode, cart])
+        if (userInfo) {
+            setUserInfoValue(userInfo)
+        }
+    }, [darkMode, cart, userInfo])
 
     const [ anchorEl, setAnchorEl ] = useState(null)
     const loginClickHandler = (e) => {
@@ -71,6 +75,7 @@ export default function Layout({ title, children, description }) {
     }
     const logoutClickHandler = () => {
         setAnchorEl(null)
+        setUserInfoValue(null)
         dispatch({ type: 'USER_LOGOUT' })
         Cookies.remove('userInfo')
         Cookies.remove('cartItems')
@@ -101,7 +106,7 @@ export default function Layout({ title, children, description }) {
                             </Link>
                         </NextLink>
                         {
-                            userInfo ? (
+                            userInfoValue ? (
                                 <>
                                     <Button
                                         className={classes.navbarButton}
@@ -109,7 +114,7 @@ export default function Layout({ title, children, description }) {
                                         aria-controls="simple-menu"
                                         aria-haspopup="true"
                                         onClick={loginClickHandler}
-                                    >{userInfo.name}</Button>
+                                    >{userInfoValue.name}</Button>
                                     <Menu
                                         id="simple-menu"
                                         anchorEl={anchorEl}
