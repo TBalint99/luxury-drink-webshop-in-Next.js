@@ -17,6 +17,10 @@ const useStyles = makeStyles({
     link: {
         color: '#fff',
     },
+    backicon: {
+        marginRight: '.15em',
+        marginBottom: '.06em'
+    },
     main: {
         minHeight: '80vh',
     },
