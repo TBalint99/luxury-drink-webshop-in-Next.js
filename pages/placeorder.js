@@ -1,5 +1,5 @@
 import { Button, Card, Grid, IconButton, Link, List, ListItem, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Layout from '../components/Layout'
 import { Store } from '../utils/Store'
@@ -15,6 +15,13 @@ function PlaceOrder() {
   const router = useRouter()
   const { state } = useContext(Store)
   const { cart: { cartItems, shippingAddress, paymentMethod } } = state
+  const [shippingAddressValue, setShippingAddressValue] = useState({
+    fullName: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    country: ''
+  })
 
   const roundTwoDecimals = (num) => Math.round(num*100 + Number.EPSILON) / 100 
 
@@ -24,10 +31,19 @@ function PlaceOrder() {
   const totalPrice = roundTwoDecimals(itemsPrice + shippingPrice + taxPrice) 
 
   useEffect(() => {
-    if(!paymentMethod) {
+
+    if(cartItems.length === 0) {
+      alert('Your cart is empty!')
+      router.push('/') 
+    } else if(!paymentMethod) {
         router.push('/payment')
     }
-  }, [])
+
+    if(shippingAddress) {
+      setShippingAddressValue(shippingAddress)
+    }
+
+  }, [shippingAddress])
 
   return (
     <Layout title="Shopping Cart">
@@ -48,13 +64,13 @@ function PlaceOrder() {
                   </Typography>
                 </ListItem>
                 <ListItem>
-                  {shippingAddress.fullName},
-                  {shippingAddress.address},
+                  {shippingAddressValue.fullName},
+                  {shippingAddressValue.address},
                   {' '},
-                  {shippingAddress.city},
-                  {shippingAddress.postalCode},
+                  {shippingAddressValue.city},
+                  {shippingAddressValue.postalCode},
                   {' '},
-                  {shippingAddress.country}
+                  {shippingAddressValue.country}
                 </ListItem>
               </List>
             </Card>

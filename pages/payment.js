@@ -14,11 +14,17 @@ export default function Payment() {
     const router = useRouter()
     const [paymentMethod, setPaymentMethod] = useState('')
     const { state, dispatch } = useContext(Store)
-    const { cart: { shippingAddress } } = state
+    const { cart: { cartItems, shippingAddress } } = state
     const classes = useStyles()
 
     useEffect(() => {
-        if(!shippingAddress.address) {
+
+        if(cartItems.length === 0) {
+            alert('Your cart is empty!')
+            router.push('/') 
+        }
+
+        if(!shippingAddress) {
             router.push('/shipping')
         } else {
             setPaymentMethod(Cookies.get('paymentMethod') || '')

@@ -1,11 +1,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link'
-import { AppBar, Toolbar, Typography, Container, Link, createMuiTheme, ThemeProvider, CssBaseline, Switch, Badge, Button, Menu, MenuItem } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Container, Link, ThemeProvider, CssBaseline, Switch, Badge, Button, Menu, MenuItem, useMediaQuery, useTheme, IconButton, createTheme } from '@material-ui/core';
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/router';
+import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
+import MenuIcon from '@material-ui/icons/Menu';
 
 export default function Layout({ title, children, description }) {
 
@@ -13,7 +15,7 @@ export default function Layout({ title, children, description }) {
     const { state, dispatch } = useContext(Store)
     const { darkMode, cart, userInfo } = state
 
-    const theme = createMuiTheme({
+    const theme = createTheme({
         typography: {
             h1: {
                 fontSize: '1.6rem',
@@ -49,7 +51,11 @@ export default function Layout({ title, children, description }) {
     // everytime the darkMode value changes, it will automatically apply the selected mode
     const [darkModeValue, setDarkModeValue] = useState(false)
     const [badgeValue, setBadgeValue] = useState("Cart")
+    const [badgeValueMobile, setBadgeValueMobile] = useState("")
     const [userInfoValue, setUserInfoValue] = useState(null)
+
+    const themeValue = useTheme()
+    const isMobile = useMediaQuery(themeValue.breakpoints.down("xs"))
 
     useEffect(() => {
         setDarkModeValue(darkMode)
@@ -60,6 +66,14 @@ export default function Layout({ title, children, description }) {
                 color='secondary'
             >Cart</Badge>
             : "Cart"
+        )
+        setBadgeValueMobile(
+            cart.cartItems.length > 0 ?
+            <Badge
+                badgeContent={cart.cartItems.length}
+                color='secondary'
+            ><ShoppingCartIcon /></Badge>
+            : ""
         )
         if (userInfo) {
             setUserInfoValue(userInfo)
@@ -74,12 +88,14 @@ export default function Layout({ title, children, description }) {
         setAnchorEl(null)
     }
     const logoutClickHandler = () => {
+        router.push('/')
         setAnchorEl(null)
         setUserInfoValue(null)
         dispatch({ type: 'USER_LOGOUT' })
         Cookies.remove('userInfo')
         Cookies.remove('cartItems')
-        router.push('/')
+        Cookies.remove('paymentMethod')
+        Cookies.remove('shippingAddress')
     }
 
     return (
@@ -97,43 +113,89 @@ export default function Layout({ title, children, description }) {
                             <Typography className={classes.brand} color='secondary'>NextDrinks</Typography>
                         </Link>
                     </NextLink>
-                    <div className={classes.grow}></div>
-                    <div className={classes.linkContainer}>
-                        <Switch checked={darkModeValue} onChange={darkModeChangeHandler}></Switch>
-                        <NextLink href="/cart" passHref>
-                            <Link color='secondary' component="button">
-                                {badgeValue}
-                            </Link>
-                        </NextLink>
-                        {
-                            userInfoValue ? (
-                                <>
-                                    <Button
-                                        className={classes.navbarButton}
-                                        color='secondary'
-                                        aria-controls="simple-menu"
-                                        aria-haspopup="true"
-                                        onClick={loginClickHandler}
-                                    >{userInfoValue.name}</Button>
-                                    <Menu
-                                        id="simple-menu"
-                                        anchorEl={anchorEl}
-                                        keepMounted
-                                        open={Boolean(anchorEl)}
-                                        onClose={loginMenuCloseHandler}
-                                    >
-                                        <MenuItem onClick={loginMenuCloseHandler}>Profile</MenuItem>
-                                        <MenuItem onClick={loginMenuCloseHandler}>My account</MenuItem>
-                                        <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
-                                    </Menu>
-                                </>
-                            ) : (
-                                <NextLink href="/login" passHref>
-                                    <Link color='secondary' component="button">Login</Link>
-                                </NextLink>
-                            )
-                        }
-                    </div>
+                    {
+                        isMobile ? (
+                            <>
+                                <div className={classes.grow}></div>
+                                <div className={classes.linkContainer}>
+                                    <Switch checked={darkModeValue} onChange={darkModeChangeHandler}></Switch>
+                                    <NextLink href="/cart" passHref>
+                                        <Link color='secondary' component="button">
+                                            {badgeValueMobile}
+                                        </Link>
+                                    </NextLink>
+                                    {
+                                        userInfoValue ? (
+                                            <>
+                                                <IconButton
+                                                    className={classes.navbarButton}
+                                                    color='secondary'
+                                                    aria-controls="simple-menu"
+                                                    aria-haspopup="true"
+                                                    onClick={loginClickHandler}
+                                                ><MenuIcon /></IconButton>
+                                                <Menu
+                                                    id="simple-menu"
+                                                    anchorEl={anchorEl}
+                                                    keepMounted
+                                                    open={Boolean(anchorEl)}
+                                                    onClose={loginMenuCloseHandler}
+                                                >
+                                                    <MenuItem onClick={loginMenuCloseHandler}>Profile</MenuItem>
+                                                    <MenuItem onClick={loginMenuCloseHandler}>My account</MenuItem>
+                                                    <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
+                                                </Menu>
+                                            </>
+                                        ) : (
+                                            <NextLink href="/login" passHref>
+                                                <Link color='secondary' component="button">Login</Link>
+                                            </NextLink>
+                                        )
+                                    }
+                                </div>
+                            </>
+                        ) : (
+                            <>
+                                <div className={classes.grow}></div>
+                                <div className={classes.linkContainer}>
+                                    <Switch checked={darkModeValue} onChange={darkModeChangeHandler}></Switch>
+                                    <NextLink href="/cart" passHref>
+                                        <Link color='secondary' component="button">
+                                            {badgeValue}
+                                        </Link>
+                                    </NextLink>
+                                    {
+                                        userInfoValue ? (
+                                            <>
+                                                <Button
+                                                    className={classes.navbarButton}
+                                                    color='secondary'
+                                                    aria-controls="simple-menu"
+                                                    aria-haspopup="true"
+                                                    onClick={loginClickHandler}
+                                                >{userInfoValue.name}</Button>
+                                                <Menu
+                                                    id="simple-menu"
+                                                    anchorEl={anchorEl}
+                                                    keepMounted
+                                                    open={Boolean(anchorEl)}
+                                                    onClose={loginMenuCloseHandler}
+                                                >
+                                                    <MenuItem onClick={loginMenuCloseHandler}>Profile</MenuItem>
+                                                    <MenuItem onClick={loginMenuCloseHandler}>My account</MenuItem>
+                                                    <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
+                                                </Menu>
+                                            </>
+                                        ) : (
+                                            <NextLink href="/login" passHref>
+                                                <Link color='secondary' component="button">Login</Link>
+                                            </NextLink>
+                                        )
+                                    }
+                                </div>
+                            </>
+                        )
+                    }
                 </Toolbar>
             </AppBar>
             <Container

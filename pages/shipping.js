@@ -1,6 +1,6 @@
 import { Button, List, ListItem, TextField, Typography } from '@material-ui/core'
 import { useRouter } from 'next/router'
-import React, { useContext, useEffect } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import Layout from '../components/Layout'
 import { Store } from '../utils/Store'
 import useStyles from '../utils/styles'
@@ -14,21 +14,49 @@ export default function Shipping() {
 
     const router = useRouter()
     const { state, dispatch } = useContext(Store)
-    const { userInfo, cart: { shippingAddress } } = state
+    const { userInfo, cart: { cartItems, shippingAddress } } = state
+    const [shippingAddressValue, setShippingAddressValue] = useState({
+        fullName: '',
+        address: '',
+        city: '',
+        postalCode: '',
+        country: ''
+    })
     
     useEffect(() => {
+        
+        if(cartItems.length === 0) {
+            alert('Your cart is empty!')
+            router.push('/') 
+        }
+
         if(!userInfo) {
             router.push('/login?redirect=/shipping')
         }
 
-        setValue('fullName', shippingAddress.fullName)
-        setValue('address', shippingAddress.address)
-        setValue('city', shippingAddress.city)
-        setValue('postalCode', shippingAddress.postalCode)
-        setValue('country', shippingAddress.country)
-    }, [])
+        if (Cookies.get('shippingAddress')) {
+            setShippingAddressValue(shippingAddress)
+        }
+
+        setValue('fullName', shippingAddressValue.fullName)
+        setValue('address', shippingAddressValue.address)
+        setValue('city', shippingAddressValue.city)
+        setValue('postalCode', shippingAddressValue.postalCode)
+        setValue('country', shippingAddressValue.country)
+    }, [shippingAddress])
 
     const classes = useStyles()
+
+    const handleChange = (event) => {
+        const { name, value } = event.target
+
+        setShippingAddressValue(prevData => {
+            return {
+                ...prevData,
+                [name] : value
+            }
+        })
+    }
 
     const submitHandler = ({ fullName, address, city, postalCode, country }) => {
 
@@ -74,6 +102,8 @@ export default function Shipping() {
                                             'Full Name is required'
                                         : '' 
                                     }
+                                    value={shippingAddressValue.fullName}
+                                    onChange={handleChange}
                                     {...field}
                                 ></TextField>
                             )}
@@ -101,6 +131,8 @@ export default function Shipping() {
                                             'Address is required'
                                         : '' 
                                     }
+                                    value={shippingAddressValue.address}
+                                    onChange={handleChange}
                                     {...field}
                                 ></TextField>
                             )}
@@ -128,6 +160,8 @@ export default function Shipping() {
                                             'City is required'
                                         : '' 
                                     }
+                                    value={shippingAddressValue.city}
+                                    onChange={handleChange}
                                     {...field}
                                 ></TextField>
                             )}
@@ -155,6 +189,8 @@ export default function Shipping() {
                                             'Postal Code is required'
                                         : '' 
                                     }
+                                    value={shippingAddressValue.postalCode}
+                                    onChange={handleChange}
                                     {...field}
                                 ></TextField>
                             )}
@@ -182,6 +218,8 @@ export default function Shipping() {
                                             'Country is required'
                                         : '' 
                                     }
+                                    value={shippingAddressValue.country}
+                                    onChange={handleChange}
                                     {...field}
                                 ></TextField>
                             )}
