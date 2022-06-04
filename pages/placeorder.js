@@ -86,7 +86,7 @@ function PlaceOrder() {
   }
 
   return (
-    <Layout title="Shopping Cart">
+    <Layout title="Place Order">
       <CheckoutWizard activeStep={3}></CheckoutWizard>
       <Typography component="h1" variant="h1">
         <IconButton onClick={() => router.back()} className={classes.backicon}>
