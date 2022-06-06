@@ -28,6 +28,14 @@ function reducer(state, action) {
             return {...state, loading: false, order: action.payload,  error: ''}
         case 'FETCH_FAIL':
             return {...state, loading: false, error: action.payload,}
+        case 'PAY_REQUEST':
+            return {...state, loadingPay: true}
+        case 'PAY_SUCCESS':
+            return {...state, loadingPay: false, successPay: true}
+        case 'PAY_FAIL':
+            return {...state, loadingPay: false, errorPay: action.payload}
+        case 'PAY_RESET':
+            return {...state, loadingPay: false, successPay: false, errorPay: ''}
         default:
             return state;
     }
@@ -64,9 +72,14 @@ function Order({ params }) {
         }
     }
 
-    if (!orderState.order._id || (orderState.order._id && orderState.order._id !== orderId)) {
+    if (!orderState.order._id || orderState.succesPay || (orderState.order._id && orderState.order._id !== orderId)) {
         fetchOrder()
         
+        console.log(orderState.succesPay);
+
+        if(orderState.succesPay) {
+            dispatch({ type: 'PAY_RESET' })
+        }
     } else {
         const loadPaypalScript = async () => {
             const { data: clientId } = await axios.get('/api/keys/paypal', {
@@ -91,7 +104,7 @@ function Order({ params }) {
         loadPaypalScript()
     }
 
-  }, [orderState])
+  }, [orderState.order, orderState.successPay])
 
   const {
     shippingAddress,
@@ -250,34 +263,34 @@ function Order({ params }) {
                             </TableHead>
                             <TableBody>
                                 {
-                                orderItems.map((item) => (
-                                    <TableRow key={item._id}>
-                                    <TableCell>
-                                        <NextLink href={`/product/${item.slug}`} passHref>
-                                        <Link>
-                                            <Image src={item.image} alt={item.name} width={50} height={75}></Image>
-                                        </Link>
-                                        </NextLink>
-                                    </TableCell>
+                                    orderItems.map((item) => (
+                                        <TableRow key={item._id}>
+                                        <TableCell>
+                                            <NextLink href={`/product/${item.slug}`} passHref>
+                                            <Link>
+                                                <Image src={item.image} alt={item.name} width={50} height={75}></Image>
+                                            </Link>
+                                            </NextLink>
+                                        </TableCell>
 
-                                    <TableCell>
-                                        <NextLink href={`/product/${item.slug}`} passHref>
-                                        <Link>
-                                            <Typography>{item.name}</Typography>
-                                        </Link>
-                                        </NextLink>
-                                    </TableCell>
-                                    <TableCell align='right'>
-                                        <Typography>{item.quantity}</Typography>
-                                    </TableCell>
-                                    <TableCell align='right'>
-                                        <Typography>${item.price}</Typography>
-                                    </TableCell>
+                                        <TableCell>
+                                            <NextLink href={`/product/${item.slug}`} passHref>
+                                            <Link>
+                                                <Typography>{item.name}</Typography>
+                                            </Link>
+                                            </NextLink>
+                                        </TableCell>
+                                        <TableCell align='right'>
+                                            <Typography>{item.quantity}</Typography>
+                                        </TableCell>
+                                        <TableCell align='right'>
+                                            <Typography>${item.price}</Typography>
+                                        </TableCell>
 
-                                    <TableCell align='right'>
-                                    </TableCell>
-                                    </TableRow>
-                                ))
+                                        <TableCell align='right'>
+                                        </TableCell>
+                                        </TableRow>
+                                    ))
                                 }
                             </TableBody>
                             </Table>
