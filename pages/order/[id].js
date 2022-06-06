@@ -11,6 +11,8 @@ import ArrowBackIosIcon from '@material-ui/icons/ArrowBackIos';
 import CheckoutWizard from '../../components/CheckoutWizard'
 import { getError } from '../../utils/error'
 import axios from 'axios'
+import { PayPalButtons, usePayPalScriptReducer } from '@paypal/react-paypal-js'
+import { useSnackbar } from 'notistack'
 
 const initialState = {
     loading: true,
@@ -33,10 +35,12 @@ function reducer(state, action) {
 
 function Order({ params }) {
   const orderId = params.id
+  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer()
   const classes = useStyles()
   const router = useRouter()
   const { state } = useContext(Store)
   const { userInfo } = state
+  const { closeSnackbar, enqueueSnackbar } = useSnackbar()
 
   const [orderState, dispatch] = useReducer(reducer, initialState)
 
@@ -63,6 +67,28 @@ function Order({ params }) {
     if (!orderState.order._id || (orderState.order._id && orderState.order._id !== orderId)) {
         fetchOrder()
         
+    } else {
+        const loadPaypalScript = async () => {
+            const { data: clientId } = await axios.get('/api/keys/paypal', {
+                headers: {
+                    authorization: `Bearer: ${userInfo.token}`
+                }
+            })
+
+            paypalDispatch({
+                type: 'resetOptions',
+                value: {
+                    'client-id': clientId,
+                    currency: 'USD'
+                }
+            })
+
+            paypalDispatch({
+                type: 'setLoadingStatus',
+                value: 'pending'
+            })
+        }
+        loadPaypalScript()
     }
 
   }, [orderState])
@@ -89,6 +115,40 @@ function Order({ params }) {
 
   const handleClose = () => {
     setOpen(false)
+  }
+
+  const createOrder = (data, actions) => {
+    return actions.order.create({
+        purchase_units: [
+            {
+                amount: { value: totalPrice }
+            }
+        ]
+    }).then((orderId) => {
+        return orderId
+    })
+  }
+
+  const onApprove = (data, actions) => {
+    return actions.order.capture().then(async (details) => {
+        try {
+            dispatch({ type: 'PAY_REQUEST' })
+            const { data } = await axios.put(`/api/orders/${orderState.order._id}/pay`, details, {
+                headers: {
+                    authorization: `Bearer: ${userInfo.token}`
+                }
+            })
+            dispatch({ type: 'PAY_SUCCESS', payload: data })
+            enqueueSnackbar('Order is paid', { variant: 'success' })
+        } catch (error) {
+            dispatch({ type: 'PAY_FAIL', payload: getError(error) })
+            enqueueSnackbar(getError(error), { variant: 'error' })
+        }
+    })
+  }
+
+  const onError = (error) => { 
+    enqueueSnackbar(getError(error), { variant: 'error' })
   }
 
   return (
@@ -290,7 +350,27 @@ function Order({ params }) {
                                 </Typography>
                                 </Grid>
                             </Grid>
-                        </ListItem>
+                        </ListItem> 
+                        {
+                            !isPaid && (
+                                <ListItem>
+                                    {
+                                        isPending ?
+                                        <CircularProgress /> :
+                                        (
+                                            <div className={classes.fullWidth}>
+                                                <PayPalButtons
+                                                    createOrder={createOrder}
+                                                    onApprove={onApprove}
+                                                    onError={onError}
+                                                ></PayPalButtons>
+                                            </div>
+                                            
+                                        )
+                                    }
+                                </ListItem>  
+                            )
+                        }
                     </List>
                     </Card>
                 </Grid>
