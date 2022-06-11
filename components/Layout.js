@@ -81,12 +81,15 @@ export default function Layout({ title, children, description }) {
     }, [darkMode, cart, userInfo])
 
     const [ anchorEl, setAnchorEl ] = useState(null)
+
     const loginClickHandler = (e) => {
         setAnchorEl(e.currentTarget)
     }
+
     const loginMenuCloseHandler = () => {
         setAnchorEl(null)
     }
+
     const logoutClickHandler = () => {
         router.push('/')
         setAnchorEl(null)
@@ -141,8 +144,18 @@ export default function Layout({ title, children, description }) {
                                                     open={Boolean(anchorEl)}
                                                     onClose={loginMenuCloseHandler}
                                                 >
-                                                    <MenuItem onClick={loginMenuCloseHandler}>Profile</MenuItem>
-                                                    <MenuItem onClick={loginMenuCloseHandler}>My account</MenuItem>
+                                                    <MenuItem onClick={
+                                                        () => {
+                                                            loginMenuCloseHandler()
+                                                            router.push('/profile')
+                                                        }
+                                                    }>Profile</MenuItem>
+                                                    <MenuItem onClick={
+                                                        () => {
+                                                            loginMenuCloseHandler()
+                                                            router.push('/order-history')
+                                                        }
+                                                    }>Order History</MenuItem>
                                                     <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
                                                 </Menu>
                                             </>
@@ -181,8 +194,18 @@ export default function Layout({ title, children, description }) {
                                                     open={Boolean(anchorEl)}
                                                     onClose={loginMenuCloseHandler}
                                                 >
-                                                    <MenuItem onClick={loginMenuCloseHandler}>Profile</MenuItem>
-                                                    <MenuItem onClick={loginMenuCloseHandler}>My account</MenuItem>
+                                                    <MenuItem onClick={
+                                                        () => {
+                                                            loginMenuCloseHandler()
+                                                            router.push('/profile')
+                                                        }
+                                                    }>Profile</MenuItem>
+                                                    <MenuItem onClick={
+                                                        () => {
+                                                            loginMenuCloseHandler()
+                                                            router.push('/order-history')
+                                                        }
+                                                    }>Order History</MenuItem>
                                                     <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
                                                 </Menu>
                                             </>
