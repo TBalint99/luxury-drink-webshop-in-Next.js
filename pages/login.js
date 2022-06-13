@@ -2,13 +2,14 @@ import { Button, Link, List, ListItem, TextField, Typography } from '@material-u
 import axios from 'axios'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import Layout from '../components/Layout'
 import { Store } from '../utils/Store'
 import useStyles from '../utils/styles'
 import Cookies from 'js-cookie'
 import { Controller, useForm } from 'react-hook-form'
 import { useSnackbar } from 'notistack'
+import { getError } from '../utils/error'
 
 export default function Login() {
 
@@ -27,9 +28,6 @@ export default function Login() {
         }
     }, [])
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-
     const classes = useStyles()
 
     const submitHandler = async ({ email, password }) => {
@@ -43,7 +41,7 @@ export default function Login() {
             Cookies.set('userInfo', JSON.stringify(data))
             router.push(redirect || '/')
         } catch (err) {
-            enqueueSnackbar(err.response.data ? err.response.data.message : err.message,{ variant: 'error' })
+            enqueueSnackbar(getError(err), { variant: 'error' })
         }
     }
 

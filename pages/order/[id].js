@@ -48,7 +48,7 @@ function Order({ params }) {
   const router = useRouter()
   const { state } = useContext(Store)
   const { userInfo } = state
-  const { closeSnackbar, enqueueSnackbar } = useSnackbar()
+  const { enqueueSnackbar } = useSnackbar()
 
   const [orderState, dispatch] = useReducer(reducer, initialState)
 
