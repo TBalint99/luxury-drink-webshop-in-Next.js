@@ -156,6 +156,16 @@ export default function Layout({ title, children, description }) {
                                                             router.push('/order-history')
                                                         }
                                                     }>Order History</MenuItem>
+                                                    {
+                                                        userInfoValue.isAdmin && (
+                                                            <MenuItem onClick={
+                                                                () => {
+                                                                    loginMenuCloseHandler()
+                                                                    router.push('/admin/dashboard')
+                                                                }
+                                                            }>Admin Dadhboard</MenuItem>
+                                                        )
+                                                    }
                                                     <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
                                                 </Menu>
                                             </>
@@ -206,6 +216,16 @@ export default function Layout({ title, children, description }) {
                                                             router.push('/order-history')
                                                         }
                                                     }>Order History</MenuItem>
+                                                    {
+                                                        userInfoValue.isAdmin && (
+                                                            <MenuItem onClick={
+                                                                () => {
+                                                                    loginMenuCloseHandler()
+                                                                    router.push('/admin/dashboard')
+                                                                }
+                                                            }>Admin Dadhboard</MenuItem>
+                                                        )
+                                                    }
                                                     <MenuItem onClick={logoutClickHandler}>Logout</MenuItem>
                                                 </Menu>
                                             </>
