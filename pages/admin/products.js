@@ -12,7 +12,7 @@ import { Skeleton } from '@material-ui/lab'
 
 const initialState = {
     loading: true,
-    orders: [],
+    products: [],
     error: ''
 }
 
@@ -21,7 +21,7 @@ function reducer(state, action) {
         case 'FETCH_REQUEST':
             return {...state, loading: true, error: ''}
         case 'FETCH_SUCCESS':
-            return {...state, loading: false, orders: action.payload,  error: ''}
+            return {...state, loading: false, products: action.payload,  error: ''}
         case 'FETCH_FAIL':
             return {...state, loading: false, error: action.payload,}
         default:
@@ -35,7 +35,7 @@ function AdminDashboard() {
     const router = useRouter()
     const classes = useStyles()
 
-    const [orderState, dispatch] = useReducer(reducer, initialState)
+    const [productState, dispatch] = useReducer(reducer, initialState)
 
     useEffect(() => {
         if (!userInfo) {
@@ -45,7 +45,7 @@ function AdminDashboard() {
         const fetchData = async () => {
             try {
                 dispatch({ type: 'FECTH_REQUEST' })
-                const { data } = await axios.get(`/api/admin/orders`, {
+                const { data } = await axios.get(`/api/admin/products`, {
                     headers: {
                         authorization: `Bearer: ${userInfo.token}`
                     }
@@ -61,7 +61,7 @@ function AdminDashboard() {
     }, [])
 
     return (
-        <Layout title="Order History">
+        <Layout title="Product History">
             <Grid container spacing={1}>
                 <Grid item md={3} xs={12}>
                     <Card className={classes.section}>
@@ -73,13 +73,13 @@ function AdminDashboard() {
                                 </ListItem>
                             </NextLink>
                             <NextLink href="/admin/orders" passHref>
-                                <ListItem selected button component="a">
+                                <ListItem button component="a">
                                     <ListItemText primary="Orders">
                                     </ListItemText>
                                 </ListItem>
                             </NextLink>
                             <NextLink href="/admin/products" passHref>
-                                <ListItem button component="a">
+                                <ListItem selected button component="a">
                                     <ListItemText primary="Products">
                                     </ListItemText>
                                 </ListItem>
@@ -93,62 +93,52 @@ function AdminDashboard() {
                         <List>
                             <ListItem>
                                 <Typography component="h1" variant="h1">
-                                    Orders
+                                    Products
                                 </Typography>
                             </ListItem>
                             <ListItem>
                             {
-                                orderState.loading ? (
+                                productState.loading ? (
                                     <Grid container>
                                         <Skeleton animation="wave" variant="text" width={'100%'} height={50} />
                                         <Skeleton animation="wave" variant="text" width={'100%'} height={30} />
                                         <Skeleton animation="wave" variant="text" width={'100%'} height={30} />
                                     </Grid>
                                 ) :
-                                orderState.error ? (<Typography className={classes.error}>{orderState.error}</Typography>) : (
+                                productState.error ? (<Typography className={classes.error}>{productState.error}</Typography>) : (
                                     <TableContainer>
                                         <Table>
                                             <TableHead>
                                                 <TableRow>
                                                     <TableCell>ID</TableCell>
-                                                    <TableCell>USER</TableCell>
-                                                    <TableCell>TITLE</TableCell>
-                                                    <TableCell>DATE</TableCell>
-                                                    <TableCell>TOTAL</TableCell>
-                                                    <TableCell>PAID</TableCell>
-                                                    <TableCell>DEILVERED</TableCell>
-                                                    <TableCell>ACTION</TableCell>
+                                                    <TableCell>NAME</TableCell>
+                                                    <TableCell>PRICE</TableCell>
+                                                    <TableCell>CATEGORY</TableCell>
+                                                    <TableCell>COUNT</TableCell>
+                                                    <TableCell>RATING</TableCell>
+                                                    <TableCell>ACTIONS</TableCell>
                                                 </TableRow>
                                             </TableHead>
                                             <TableBody>
                                             {
-                                                orderState.orders.map((order) => (
-                                                    <TableRow key={order._id}>
-                                                        <TableCell>{order._id.substring(20,24)}</TableCell>
-                                                        <TableCell>{order.user ? order.user.name : 'DELETED USER'}</TableCell>
-                                                        <TableCell>{
-                                                            order.orderItems.map(elem => elem.name + ", ")
-                                                        }</TableCell>
-                                                        <TableCell>{order.createdAt}</TableCell>
-                                                        <TableCell>${order.totalPrice}</TableCell>
+                                                productState.products.map((product) => (
+                                                    <TableRow key={product._id}>
+                                                        <TableCell>{product._id.substring(20, 24)}</TableCell>
+                                                        <TableCell>{product.name}</TableCell>
+                                                        <TableCell>${product.price}</TableCell>
+                                                        <TableCell>{product.category}</TableCell>
+                                                        <TableCell>{product.countInStock}</TableCell>
+                                                        <TableCell>{product.rating}</TableCell>
                                                         <TableCell>
-                                                            {
-                                                                order.isPaid ? 
-                                                                `paid at ${order.paidAt}` :
-                                                                `not paid`
-                                                            }
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            {
-                                                                order.isDelivered ? 
-                                                                `delivered at ${order.deliveredAt}` :
-                                                                `not delivered`
-                                                            }
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <NextLink href={`/order/${order._id}`} passHref>
-                                                                <Button variant="contained" color='primary'>Details</Button>
+                                                            <NextLink href={`/admin/product/${product._id}`} passHref>
+                                                                <Button
+                                                                    size='small'
+                                                                    variant="contained"
+                                                                    color='primary'
+                                                                    style={{marginRight: '.9em'}}
+                                                                >Edit</Button>
                                                             </NextLink>
+                                                            <Button size='small' variant="contained" color='primary'>Delete</Button>
                                                         </TableCell>
                                                     </TableRow>
                                                 ))
