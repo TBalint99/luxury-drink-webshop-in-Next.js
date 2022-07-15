@@ -13,7 +13,8 @@ import { useSnackbar } from 'notistack'
 
 const initialState = {
     loading: true,
-    error: ''
+    error: '',
+    loadingUpdate: false
 }
 
 function reducer(state, action) {
@@ -24,6 +25,12 @@ function reducer(state, action) {
             return {...state, loading: false, error: ''}
         case 'FETCH_FAIL':
             return {...state, loading: false, error: action.payload,}
+        case 'UPDATE_REQUEST':
+            return {...state, loadingUpdate: true, errorUpdate: '',}
+        case 'UPDATE_SUCCESS':
+            return {...state, loadingUpdate: false, errorUpdate: '',}
+        case 'UPDATE_FAIL':
+            return {...state, loadingUpdate: false, errorUpdate: action.payload,}
         default:
             return state;
     }
@@ -44,6 +51,7 @@ function ProductEdit({ params }) {
         if (!userInfo) {
             return router.push('/login')
         } else {
+
             const fetchData = async () => {
                 try {
                     dispatch({ type: 'FECTH_REQUEST' })
@@ -61,6 +69,7 @@ function ProductEdit({ params }) {
                     setValue('brand', data.brand)
                     setValue('countInStock', data.countInStock)
                     setValue('description', data.description)
+
                 } catch (error) {
                     dispatch({ type: 'FECTH_FAIL', payload: getError(error) })
                 }
@@ -69,24 +78,36 @@ function ProductEdit({ params }) {
         }
     }, [])
 
-    const submitHandler = async ({ name }) => {
+    const submitHandler = async ({ name, slug, price, category, image, brand, countInStock, description }) => {
 
         closeSnackbar()
 
         try {
-            const { data } = await axios.put(`/api/admin/product/${productId}`,
-            {
-                name,
-            },
-            {
-                headers: {
-                    authorization: `Bearer: ${userInfo.token}`
+            dispatch({ type: 'UPDATE_REQUEST' })
+            await axios.put(`/api/admin/products/${productId}`,
+                {
+                    name,
+                    slug,
+                    price,
+                    category,
+                    image,
+                    brand,
+                    countInStock,
+                    description
+                },
+                {
+                    headers: {
+                        authorization: `Bearer: ${userInfo.token}`
+                    }
                 }
-            }
             )
+            dispatch({ type: 'UPDATE_SUCCESS' })
             enqueueSnackbar("Product updated successfully", { variant: 'success' })
 
+            router.push('/admin/products')
+
         } catch (err) {
+            dispatch({ type: 'UPDATE_FAIL', payload: getError(err) })
             enqueueSnackbar(getError(err), { variant: 'error' })
         }
     }
@@ -319,6 +340,7 @@ function ProductEdit({ params }) {
                                             >
                                                 Update
                                             </Button>
+                                            { productState.loadingUpdate && <CircularProgress /> }
                                         </ListItem>
                                     </List>
                                 </form>
