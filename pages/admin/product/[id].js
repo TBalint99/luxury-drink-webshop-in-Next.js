@@ -14,7 +14,8 @@ import { useSnackbar } from 'notistack'
 const initialState = {
     loading: true,
     error: '',
-    loadingUpdate: false
+    loadingUpdate: false,
+    loadingUpload: false
 }
 
 function reducer(state, action) {
@@ -31,6 +32,12 @@ function reducer(state, action) {
             return {...state, loadingUpdate: false, errorUpdate: '',}
         case 'UPDATE_FAIL':
             return {...state, loadingUpdate: false, errorUpdate: action.payload,}
+        case 'UPLOAD_REQUEST':
+            return {...state, loadingUpload: true, errorUpload: '',}
+        case 'UPLOAD_SUCCESS':
+            return {...state, loadingUpload: false, errorUpload: '',}
+        case 'UPLOAD_FAIL':
+            return {...state, loadingUpload: false, errorUpload: action.payload,}
         default:
             return state;
     }
@@ -77,6 +84,30 @@ function ProductEdit({ params }) {
             fetchData()
         }
     }, [])
+
+    const uploadHandler = async (e) => {
+        const file = e.target.files[0]
+        const bodyFormData = new FormData()
+        bodyFormData.append('file', file)
+
+        try {
+            dispatch({ type: 'UPLOAD_REQUEST' })
+            const { data } = await axios.post('/api/admin/upload', bodyFormData, {
+                headers: {
+                    //with this settings, we can upload files via ajax request
+                    'Content-Type': 'multipart/form-data',
+                    authorization: `Bearer: ${userInfo.token}`
+                }
+            })
+            dispatch({ type: 'UPLOAD_SUCCESS' })
+            setValue('image', data.secure_url)
+
+            enqueueSnackbar('File uploaded successfully', { variant: 'success' })
+        } catch (error) {
+            dispatch({ type: 'UPLOAD_FAIL', payload: getError(error) })
+            enqueueSnackbar(getError(error), { variant: 'error' })
+        }
+    }
 
     const submitHandler = async ({ name, slug, price, category, image, brand, countInStock, description }) => {
 
@@ -245,6 +276,13 @@ function ProductEdit({ params }) {
                                                     ></TextField>
                                                 )}
                                             ></Controller>
+                                        </ListItem>
+                                        <ListItem>
+                                            <Button variant='contained' component="label">
+                                                Upload File
+                                                <input type="file" onChange={uploadHandler} hidden />
+                                            </Button>
+                                            { productState.loadingUpload && <CircularProgress /> }
                                         </ListItem>
                                         <ListItem>
                                             <Controller
