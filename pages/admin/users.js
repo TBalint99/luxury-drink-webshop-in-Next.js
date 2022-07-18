@@ -13,7 +13,7 @@ import { useSnackbar } from 'notistack'
 
 const initialState = {
     loading: true,
-    products: [],
+    users: [],
     error: '',
     loadingCreate: false,
     successDelete: false,
@@ -25,7 +25,7 @@ function reducer(state, action) {
         case 'FETCH_REQUEST':
             return {...state, loading: true, error: ''}
         case 'FETCH_SUCCESS':
-            return {...state, loading: false, products: action.payload,  error: ''}
+            return {...state, loading: false, users: action.payload,  error: ''}
         case 'FETCH_FAIL':
             return {...state, loading: false, error: action.payload,}
         case 'CREATE_REQUEST':
@@ -53,7 +53,7 @@ function AdminDashboard() {
     const router = useRouter()
     const classes = useStyles()
 
-    const [productState, dispatch] = useReducer(reducer, initialState)
+    const [userState, dispatch] = useReducer(reducer, initialState)
 
     useEffect(() => {
         if (!userInfo) {
@@ -63,7 +63,7 @@ function AdminDashboard() {
         const fetchData = async () => {
             try {
                 dispatch({ type: 'FECTH_REQUEST' })
-                const { data } = await axios.get(`/api/admin/products`, {
+                const { data } = await axios.get(`/api/admin/users`, {
                     headers: {
                         authorization: `Bearer: ${userInfo.token}`
                     }
@@ -74,24 +74,24 @@ function AdminDashboard() {
             }
         }
 
-        if (productState.successDelete) {
+        if (userState.successDelete) {
             dispatch({ type: 'DELETE_RESET' })
         } else {
             fetchData()
         }
 
-    }, [productState.successDelete])
+    }, [userState.successDelete])
 
     const { enqueueSnackbar } = useSnackbar()
     const createHandler = async () => {
-        if (!window.confirm('Are you sure to add product?')) {
+        if (!window.confirm('Are you sure to add user?')) {
             return
         }
 
         try {
             dispatch({ type: 'CREATE_REQUEST' })
             const { data } = await axios.post(
-                `/api/admin/products`,
+                `/api/admin/users`,
                 {},
                 {
                     headers: {
@@ -100,23 +100,23 @@ function AdminDashboard() {
                 }
             )
             dispatch({ type: 'CREATE_SUCCESS' })
-            enqueueSnackbar('Product created successfully', { variant: 'success' })
-            router.push(`/admin/product/${data.product._id}`)
+            enqueueSnackbar('User created successfully', { variant: 'success' })
+            router.push(`/admin/user/${data.user._id}`)
         } catch (error) {
             dispatch({ type: 'CREATE_FAIL' })
             enqueueSnackbar(getError(error), { variant: 'error' })
         }
     }
 
-    const deleteHandler = async (productId) => {
-        if (!window.confirm('Are you sure to delete this product?')) {
+    const deleteHandler = async (userId) => {
+        if (!window.confirm('Are you sure to delete this user?')) {
             return
         }
 
         try {
             dispatch({ type: 'DELETE_REQUEST' })
             await axios.delete(
-                `/api/admin/products/${productId}`,
+                `/api/admin/users/${userId}`,
                 {
                     headers: {
                         authorization: `Bearer: ${userInfo.token}`
@@ -124,7 +124,7 @@ function AdminDashboard() {
                 }
             )
             dispatch({ type: 'DELETE_SUCCESS' })
-            enqueueSnackbar('Product deleted successfully', { variant: 'success' })
+            enqueueSnackbar('User deleted successfully', { variant: 'success' })
         } catch (error) {
             dispatch({ type: 'DELETE_FAIL' })
             enqueueSnackbar(getError(error), { variant: 'error' })
@@ -132,7 +132,7 @@ function AdminDashboard() {
     }
 
     return (
-        <Layout title="Product History">
+        <Layout title="User History">
             <Grid container spacing={1}>
                 <Grid item md={3} xs={12}>
                     <Card className={classes.section}>
@@ -149,9 +149,9 @@ function AdminDashboard() {
                                     </ListItemText>
                                 </ListItem>
                             </NextLink>
-                            <NextLink href="/admin/products" passHref>
+                            <NextLink href="/admin/users" passHref>
                                 <ListItem selected button component="a">
-                                    <ListItemText primary="Products">
+                                    <ListItemText primary="Users">
                                     </ListItemText>
                                 </ListItem>
                             </NextLink>
@@ -166,9 +166,9 @@ function AdminDashboard() {
                                 <Grid container>
                                     <Grid item xs={6} alignItems="center">
                                         <Typography component="h1" variant="h1">
-                                            Products
+                                            Users
                                         </Typography>
-                                        { productState.loadingDelete && <CircularProgress />}
+                                        { userState.loadingDelete && <CircularProgress />}
                                     </Grid>
                                     <Grid item xs={6} align="right">
                                         <Button
@@ -178,20 +178,20 @@ function AdminDashboard() {
                                         >
                                             Create
                                         </Button>
-                                        { productState.loadingCreate && <CircularProgress /> }
+                                        { userState.loadingCreate && <CircularProgress /> }
                                     </Grid>
                                 </Grid>
                             </ListItem>
                             <ListItem>
                             {
-                                productState.loading ? (
+                                userState.loading ? (
                                     <Grid container>
                                         <Skeleton animation="wave" variant="text" width={'100%'} height={50} />
                                         <Skeleton animation="wave" variant="text" width={'100%'} height={30} />
                                         <Skeleton animation="wave" variant="text" width={'100%'} height={30} />
                                     </Grid>
                                 ) :
-                                productState.error ? (<Typography className={classes.error}>{productState.error}</Typography>) : (
+                                userState.error ? (<Typography className={classes.error}>{userState.error}</Typography>) : (
                                     <TableContainer>
                                         <Table>
                                             <TableHead>
@@ -207,16 +207,16 @@ function AdminDashboard() {
                                             </TableHead>
                                             <TableBody>
                                             {
-                                                productState.products.map((product) => (
-                                                    <TableRow key={product._id}>
-                                                        <TableCell>{product._id.substring(20, 24)}</TableCell>
-                                                        <TableCell>{product.name}</TableCell>
-                                                        <TableCell>${product.price}</TableCell>
-                                                        <TableCell>{product.category}</TableCell>
-                                                        <TableCell>{product.countInStock}</TableCell>
-                                                        <TableCell>{product.rating}</TableCell>
+                                                userState.users.map((user) => (
+                                                    <TableRow key={user._id}>
+                                                        <TableCell>{user._id.substring(20, 24)}</TableCell>
+                                                        <TableCell>{user.name}</TableCell>
+                                                        <TableCell>${user.price}</TableCell>
+                                                        <TableCell>{user.category}</TableCell>
+                                                        <TableCell>{user.countInStock}</TableCell>
+                                                        <TableCell>{user.rating}</TableCell>
                                                         <TableCell>
-                                                            <NextLink href={`/admin/product/${product._id}`} passHref>
+                                                            <NextLink href={`/admin/user/${user._id}`} passHref>
                                                                 <Button
                                                                     size='small'
                                                                     variant="contained"
@@ -228,7 +228,7 @@ function AdminDashboard() {
                                                                 size='small'
                                                                 variant="outlined"
                                                                 color='secondary'
-                                                                onClick={() => deleteHandler(product._id)}
+                                                                onClick={() => deleteHandler(user._id)}
                                                             >Delete</Button>
                                                         </TableCell>
                                                     </TableRow>

@@ -42,4 +42,17 @@ handler.put(async (req, res) => {
     }
 })
 
+handler.delete(async (req, res) => {
+    await db.connect()
+    const product = await Product.findById(req.query.id)
+    if (product) {
+        await product.remove()
+        await db.disconnect()
+        res.send({ message: 'Product Deleted' })
+    } else {
+        await db.disconnect()
+        res.statusCode(404).send({ message: 'Product Not Found' })
+    }
+})
+
 export default handler
