@@ -47,7 +47,7 @@ function reducer(state, action) {
     }
 }
 
-function AdminDashboard() {
+function AdminProducts() {
     const { state } = useContext(Store)
     const { userInfo } = state
     const router = useRouter()
@@ -155,6 +155,12 @@ function AdminDashboard() {
                                     </ListItemText>
                                 </ListItem>
                             </NextLink>
+                            <NextLink href="/admin/users" passHref>
+                                <ListItem button component="a">
+                                    <ListItemText primary="Users">
+                                    </ListItemText>
+                                </ListItem>
+                            </NextLink>
                         </List>
                     </Card>
                 </Grid>
@@ -250,4 +256,4 @@ function AdminDashboard() {
 
 // to get rid of SSR at this component, use dynamic export
 // in this case, the cart page will only be rendered at client side
-export default dynamic(() => Promise.resolve(AdminDashboard), { ssr: false })
+export default dynamic(() => Promise.resolve(AdminProducts), { ssr: false })
