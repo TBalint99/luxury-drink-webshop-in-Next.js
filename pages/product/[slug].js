@@ -133,14 +133,14 @@ export default function ProductScreen(props) {
                         <List>
                             <ListItem>
                                 <Grid container>
-                                    <Grid item xs={6}><Typography>Price</Typography></Grid>
-                                    <Grid item xs={6}><Typography>${product.price}</Typography></Grid>
+                                    <Grid item xs={4}><Typography>Price:</Typography></Grid>
+                                    <Grid item xs={8}><Typography>${product.price}</Typography></Grid>
                                 </Grid>
                             </ListItem>
                             <ListItem>
                                 <Grid container>
-                                    <Grid item xs={6}><Typography>Status</Typography></Grid>
-                                    <Grid item xs={6}>
+                                    <Grid item xs={4}><Typography>Status:</Typography></Grid>
+                                    <Grid item xs={8}>
                                         <Typography>{product.countInStock > 0 ? 'In stock' : 'Unavailable'}</Typography>
                                     </Grid>
                                 </Grid>
@@ -173,13 +173,13 @@ export default function ProductScreen(props) {
                     reviews.map((review) => (
                         <ListItem key={review._id}>
                             <Grid container spacing={1}>
-                                <Grid item md={12}>
+                                <Grid item md={12} xs={12}>
                                     <Typography>
                                         <strong>{review.name}</strong>    
                                     </Typography>
                                     <Typography className={classes.date}>{Date(review.createdAt).toLocaleString('en-US').substring(0,21)}</Typography>
                                 </Grid>
-                                <Grid item md={12}>
+                                <Grid item md={12} xs={12}>
                                     <Rating value={review.rating} readOnly></Rating>
                                     <Typography>{review.comment}</Typography>
                                 </Grid>
@@ -195,12 +195,12 @@ export default function ProductScreen(props) {
                                 className={classes.reviewForm}
                             >
                                 <List>
-                                    <ListItem>
+                                    <ListItem className={classes.reviewItem}>
                                         <Typography variant='h1'>
                                             Leave your review
                                         </Typography>
                                     </ListItem>
-                                    <ListItem>
+                                    <ListItem className={classes.reviewItem}>
                                         <TextField
                                             multiline
                                             variant='outlined'
@@ -211,7 +211,7 @@ export default function ProductScreen(props) {
                                             onChange={(e) => setComment(e.target.value)}
                                         />
                                     </ListItem>
-                                    <ListItem>
+                                    <ListItem className={classes.reviewItem}>
                                         <Rating
                                             name="simple-controlled"
                                             value={rating}

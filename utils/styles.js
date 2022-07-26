@@ -61,6 +61,9 @@ const useStyles = makeStyles({
     date: {
         fontSize: '.9rem',
         opacity: '.65'
+    },
+    reviewItem: {
+        paddingLeft: '0'
     }
 })
 
