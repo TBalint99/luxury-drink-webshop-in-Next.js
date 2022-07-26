@@ -58,10 +58,9 @@ const useStyles = makeStyles({
         maxWidth: 800,
         width: '100%'
     },
-    reviewItems: {
-        marginRight: '1rem',
-        borderRight: '1px #808080 solid',
-        paddingRight: '1rem'
+    date: {
+        fontSize: '.9rem',
+        opacity: '.65'
     }
 })
 

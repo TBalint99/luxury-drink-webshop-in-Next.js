@@ -16,7 +16,7 @@ import axios from 'axios';
 import { useRouter } from 'next/router';
 import { useContext } from 'react';
 import { Store } from '../utils/Store';
-import { Rating } from '@material-ui/lab';
+import Rating from '@material-ui/lab/Rating';
 
 export default function Home(props) {
   

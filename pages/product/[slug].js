@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import Layout from '../../components/Layout';
 import NextLink from 'next/link';
 import { Button, Card, CircularProgress, Grid, Link, List, ListItem, TextField, Typography } from '@material-ui/core';
-import { Rating } from '@material-ui/lab';
+import Rating from '@material-ui/lab/Rating';
 import useStyles from '../../utils/styles';
 import Image from 'next/image';
 import db from '../../utils/db';
@@ -22,6 +22,7 @@ export default function ProductScreen(props) {
     const classes = useStyles()
     const { enqueueSnackbar } = useSnackbar()
 
+    const [userInfoState, setUserInfoState] = useState(false)
     const [reviews, setReviews] = useState([])
     const [rating, setRating] = useState(0)
     const [comment, setComment] = useState('')
@@ -36,9 +37,12 @@ export default function ProductScreen(props) {
             {
               rating,
               comment,
+              createdAt: Date.now()
             },
             {
-              headers: { authorization: `Bearer ${userInfo.token}` },
+                headers: {
+                    authorization: `Bearer: ${userInfo.token}`
+                }
             }
           )
           setLoading(false)
@@ -60,6 +64,7 @@ export default function ProductScreen(props) {
     }
 
     useEffect(() => {
+        setUserInfoState(userInfo)
         fetchReviews()
     }, [])
 
@@ -114,7 +119,7 @@ export default function ProductScreen(props) {
                         </ListItem>
                         <ListItem>
                             <Rating value={product.rating} readOnly></Rating>
-                            <Link href='reviews'>
+                            <Link href='#reviews'>
                                 <Typography>({product.numReviews} reviews)</Typography>
                             </Link>
                         </ListItem>
@@ -156,25 +161,25 @@ export default function ProductScreen(props) {
             <List>
                 <ListItem>
                     <Typography
-                    name="reviews"
-                    id="reviews"
-                    variand="h2"
+                        name="reviews"
+                        id="reviews"
+                        variant="h1"
                     >
-                    Customer Reviews
+                        Customer Reviews
                     </Typography>
                 </ListItem>
                 {reviews.length === 0 && <ListItem>No review</ListItem>}
                 {
                     reviews.map((review) => (
                         <ListItem key={review._id}>
-                            <Grid container>
-                                <Grid item className={classes.reviewItem}>
+                            <Grid container spacing={1}>
+                                <Grid item md={12}>
                                     <Typography>
                                         <strong>{review.name}</strong>    
                                     </Typography>
-                                    <Typography>{review.createdAt.substring(0,10)}</Typography>
+                                    <Typography className={classes.date}>{Date(review.createdAt).toLocaleString('en-US').substring(0,21)}</Typography>
                                 </Grid>
-                                <Grid item>
+                                <Grid item md={12}>
                                     <Rating value={review.rating} readOnly></Rating>
                                     <Typography>{review.comment}</Typography>
                                 </Grid>
@@ -184,7 +189,7 @@ export default function ProductScreen(props) {
                 }
                 <ListItem>
                     {
-                        userInfo ? (
+                        userInfoState ? (
                             <form
                                 onSubmit={submitHandler}
                                 className={classes.reviewForm}
@@ -210,7 +215,7 @@ export default function ProductScreen(props) {
                                         <Rating
                                             name="simple-controlled"
                                             value={rating}
-                                            onChange={(e) => setRating(e.target.value)}
+                                            onChange={(e) => setRating(Number(e.target.value))}
                                         />
                                     </ListItem>
                                     <Button

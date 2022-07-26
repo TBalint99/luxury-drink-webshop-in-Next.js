@@ -36,13 +36,14 @@ handler.use(isAuth).post(async (req, res) => {
                 {
                     $set: {
                         'reviews.$.comment': req.body.comment,
-                        'reviews.$.rating': Number(req.body.rating)
+                        'reviews.$.rating': Number(req.body.rating),
+                        'reviews.$.createdAt': req.body.createdAt,
                     }
                 }       
             )
 
-            const updatedProduct = await Product.findById(req.query.id);
-            updatedProduct.numReviews = updatedProduct.reviews.length;
+            const updatedProduct = await Product.findById(req.query.id)
+            updatedProduct.numReviews = updatedProduct.reviews.length
             updatedProduct.rating =
                 updatedProduct.reviews.reduce((a, c) => c.rating + a, 0) /
                 updatedProduct.reviews.length;
@@ -56,7 +57,8 @@ handler.use(isAuth).post(async (req, res) => {
                 user: mongoose.Types.ObjectId(req.user._id),
                 name: req.user.name,
                 rating: Number(req.body.rating),
-                comment: req.body.comment
+                comment: req.body.comment,
+                createdAt: req.body.createdAt
             }
             product.reviews.push(review)
             product.numReview = product.reviews.length,
@@ -64,6 +66,9 @@ handler.use(isAuth).post(async (req, res) => {
 
             await product.save()
             await db.disconnect()
+            res.status(201).send({
+                message: 'Review submitted',
+            });
         }
     } else {
         await db.disconnect()
