@@ -17,7 +17,6 @@ function CartScreen() {
 
   useEffect(() => {
     setCartItemState(cartItems)
-    console.log(cartItemState);
     mountedRef.current = false
   },[cartItems, cartItemState])
 
