@@ -1,5 +1,5 @@
 import { Button, Card, Grid, Link, List, ListItem, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@material-ui/core'
-import React, { useContext } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Layout from '../components/Layout'
 import { Store } from '../utils/Store'
@@ -12,6 +12,14 @@ function CartScreen() {
   const router = useRouter()
   const { state, dispatch } = useContext(Store)
   const { cart: { cartItems } } = state
+  const [cartItemState, setCartItemState] = useState([])
+  const mountedRef = useRef(true)
+
+  useEffect(() => {
+    setCartItemState(cartItems)
+    console.log(cartItemState);
+    mountedRef.current = false
+  },[cartItems, cartItemState])
 
   const updateCartHandler = async (item, quantity) => {
     const { data } = await axios.get(`/api/products/${item._id}`)
@@ -36,7 +44,7 @@ function CartScreen() {
     <Layout title="Shopping Cart">
       <Typography component="h1" variant="h1">Shopping Cart</Typography>
       {
-        cartItems.length === 0 ? (
+        cartItemState.length === 0 ? (
           <div>
             Cart is empty. &nbsp;
             <NextLink href="/" passHref>
@@ -62,7 +70,7 @@ function CartScreen() {
                   </TableHead>
                   <TableBody>
                     {
-                      cartItems.map((item) => (
+                      cartItemState.map((item) => (
                         <TableRow key={item._id}>
                           <TableCell>
                             <NextLink href={`/product/${item.slug}`} passHref>
@@ -115,8 +123,8 @@ function CartScreen() {
                 <List>
                     <ListItem>
                       <Typography variant='h2'>
-                        Subtotal ({cartItems.reduce((a, c) => a + c.quantity, 0)}{' '} items) : $
-                        {cartItems.reduce((a, c) => a + c.quantity * c.price, 0)}
+                        Subtotal ({cartItemState.reduce((a, c) => a + c.quantity, 0)}{' '} items) : $
+                        {cartItemState.reduce((a, c) => a + c.quantity * c.price, 0)}
                       </Typography>
                     </ListItem>
                     <ListItem>
