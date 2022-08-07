@@ -64,6 +64,7 @@ export default function Layout({ title, children, description }) {
             <Badge
                 badgeContent={cart.cartItems.length}
                 color='secondary'
+                overlap="rectangular"
             >Cart</Badge>
             : "Cart"
         )
@@ -72,6 +73,7 @@ export default function Layout({ title, children, description }) {
             <Badge
                 badgeContent={cart.cartItems.length}
                 color='secondary'
+                overlap="rectangular"
             ><ShoppingCartIcon /></Badge>
             : ""
         )
