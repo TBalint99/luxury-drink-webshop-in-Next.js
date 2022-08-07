@@ -7,6 +7,9 @@ const useStyles = makeStyles({
             marginLeft: 10,
         },
     },
+    toolbar: {
+        justifyContent: 'space-between'
+    },
     brand: {
         fontWeight: 'bold',
         fontSize: '1.5rem',
