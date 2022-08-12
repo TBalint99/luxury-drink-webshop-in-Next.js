@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import Head from 'next/head';
 import NextLink from 'next/link'
-import { AppBar, Toolbar, Typography, Container, Link, ThemeProvider, CssBaseline, Switch, Badge, Button, Menu, MenuItem, useMediaQuery, useTheme, IconButton, createTheme, Box, Drawer, List, ListItem, Divider, ListItemText } from '@material-ui/core';
+import { AppBar, Toolbar, Typography, Container, Link, ThemeProvider, CssBaseline, Switch, Badge, Button, Menu, MenuItem, useMediaQuery, useTheme, IconButton, createTheme, Box, Drawer, List, ListItem, Divider, ListItemText, InputBase } from '@material-ui/core';
 import useStyles from '../utils/styles';
 import { Store } from '../utils/Store';
 import { getError } from '../utils/error';
@@ -10,6 +10,7 @@ import { useRouter } from 'next/router';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
 import MenuIcon from '@material-ui/icons/Menu';
 import CancelIcon from '@material-ui/icons/Cancel';
+import SearchIcon from '@material-ui/icons/Search';
 import LocalOfferIcon from '@material-ui/icons/LocalOffer'
 import { useSnackbar } from 'notistack';
 import axios from 'axios';
@@ -60,6 +61,7 @@ export default function Layout({ title, children, description }) {
     const [userInfoValue, setUserInfoValue] = useState(null)
     const [sidebarVisible, setSidebarVisible] = useState(false)
     const [categories, setCategories] = useState([])
+    const [query, setQuery] = useState('')
 
     const themeValue = useTheme()
     const isMobile = useMediaQuery(themeValue.breakpoints.down("xs"))
@@ -131,6 +133,15 @@ export default function Layout({ title, children, description }) {
         setSidebarVisible(false)
     }
 
+    const queryChangeHandler = (e) => {
+        setQuery(e.target.value)
+    }
+
+    const submitHandler = (e) => {
+        e.preventDefault()
+        router.push(`/search?query=${query}`)
+    }
+
     return (
         <div>
             <Head>
@@ -146,6 +157,7 @@ export default function Layout({ title, children, description }) {
                                 edge='start'
                                 aria-label='open drawer'
                                 onClick={sidebbarOpenHandler}
+                                className={classes.menuButton}
                             >
                                 {
                                     isMobile ? (
@@ -157,9 +169,9 @@ export default function Layout({ title, children, description }) {
                                 
                             </IconButton>
                             <NextLink href="/" passHref>
-                            <Link>
-                                <Typography className={classes.brand} color='secondary'>NextDrinks</Typography>
-                            </Link>
+                                <Link style={{ textDecoration: 'none' }}>
+                                    <Typography className={classes.brand} color='secondary'>NextDrinks</Typography>
+                                </Link>
                             </NextLink>
                         </Box>
                         <Drawer
@@ -272,7 +284,23 @@ export default function Layout({ title, children, description }) {
                                 </>
                             ) : (
                                 <>
-                                    <div className={classes.grow}></div>
+                                    <div className={classes.searchSection}>
+                                        <form onSubmit={submitHandler} className={classes.searchForm}>
+                                            <InputBase
+                                                name='query'
+                                                className={classes.searchInput}
+                                                placeholder="Search products"
+                                                onChange={queryChangeHandler}
+                                            />
+                                            <IconButton
+                                                type='submit'
+                                                className={classes.iconButton}
+                                                aria-label="search"
+                                            >
+                                                <SearchIcon/>
+                                            </IconButton>
+                                        </form>
+                                    </div>
                                     <div className={classes.linkContainer}>
                                         <Switch checked={darkModeValue} onChange={darkModeChangeHandler}></Switch>
                                         <NextLink href="/cart" passHref>
