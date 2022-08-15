@@ -13,6 +13,7 @@ const data = {
             email: 'szekdorottya@gmail.com',
             password: bcrypt.hashSync('password'),
             isAdmin: false
+
         },
     ],
     products: [
@@ -21,6 +22,8 @@ const data = {
             slug: 'the-glenlivet',
             category: 'Whisky',
             image: '/images/drink-1.jpg',
+            isFeatured: true,
+            featuredImage: '/images/banner1.jpg',
             price: 70,
             brand: 'The Glenlivet',
             rating: 4.5,
@@ -33,6 +36,8 @@ const data = {
             slug: 'woodford-reserve',
             category: 'Whisky',
             image: '/images/drink-2.jpg',
+            isFeatured: true,
+            featuredImage: '/images/banner2.jpg',
             price: 80,
             brand: 'Woodford Reserve',
             rating: 4.2,

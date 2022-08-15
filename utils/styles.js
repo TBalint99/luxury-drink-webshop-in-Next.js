@@ -99,6 +99,12 @@ const useStyles = makeStyles((theme) => ({
     },
     sort: {
         marginRight: 5
+    },
+    featuredImage: {
+        height: '380px',
+        width: '100%',
+        objectFit: 'cover',
+        objectPosition: 'center'
     }
 }))
 

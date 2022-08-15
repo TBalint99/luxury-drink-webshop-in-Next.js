@@ -169,8 +169,8 @@ function AdminProducts() {
                     <Card className={classes.section}>
                         <List>
                             <ListItem>
-                                <Grid container>
-                                    <Grid item xs={6} alignItems="center">
+                                <Grid container alignItems="center">
+                                    <Grid item xs={6}>
                                         <Typography component="h1" variant="h1">
                                             Products
                                         </Typography>
