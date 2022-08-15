@@ -68,6 +68,9 @@ const useStyles = makeStyles((theme) => ({
     reviewItem: {
         paddingLeft: '0'
     },
+    mt1: {
+        marginTop: '1rem'
+    },
     searchSection: {
         display: 'none',
         [theme.breakpoints.up('md')]: {
@@ -93,6 +96,9 @@ const useStyles = makeStyles((theme) => ({
         '& span': {
             color: '#000000'
         }
+    },
+    sort: {
+        marginRight: 5
     }
 }))
 
