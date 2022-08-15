@@ -101,7 +101,7 @@ const useStyles = makeStyles((theme) => ({
         marginRight: 5
     },
     featuredImage: {
-        height: '380px',
+        height: '20rem',
         width: '100%',
         objectFit: 'cover',
         objectPosition: 'center'
